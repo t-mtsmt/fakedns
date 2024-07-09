@@ -13,12 +13,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
+# Modifications copyright 2024 Takashi Matsumoto
 
 """Simulates a DNS server, useful for reverse engineering.
 
 Rerwrite based on fakedns.py from remnux
 
 Mike Murr (mike@socialexploits.com, https://socialexploits.com)
+
+Modifications by Takashi Matsumoto (tmtsmt.sec@gmail.com)
 """
 
 import argparse
