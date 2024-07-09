@@ -31,6 +31,7 @@ import socket
 import sys
 import textwrap
 import traceback
+import re
 
 import netifaces
 
@@ -1282,49 +1283,32 @@ class FakeDnsServer:
         dns_resp = None
         ip = None
 
-        # Check if there is a ".", otherwise it's just a hostname with
-        # no domain name
-        if "." in fqdn:
-            domain = "." + fqdn.split(".", maxsplit=1)[-1]
-        else:
-            domain = fqdn
-        # end if
-
         fqdn_lower = fqdn.lower()
-        domain_lower = domain.lower()
 
-        self.debug_msg(f"FQDN = {fqdn}, domain = {domain}")
+        self.debug_msg(f"FQDN = {fqdn}")
 
         # First check if the fqdn should be ignored
-        if fqdn_lower in self.ignore:
-            self.debug_msg(f"Found {fqdn} in ignore list (as FQDN)")
-            self.log_msg(f"Ignoring request for {fqdn}")
+        for reject in self.ignore:
+            if re.search(reject, fqdn_lower):
+                self.debug_msg(f"Found {fqdn} in ignore list (as FQDN)")
+                self.debug_msg(f"Ignoring request for {fqdn}")
+                return
+            # end if
+        # end for
 
         # Second check if the fqdn should resolve to a specific
         # IP address
-        elif fqdn_lower in self.resolve:
-            self.debug_msg(f"Found {fqdn} in resolve list (as FQDN)")
-            ip = self.resolve[fqdn_lower]
-
-        # Third check if the domain should be ignored
-        elif domain_lower in self.ignore:
-            self.debug_msg(f"Found {domain} in ignore list (as domain)")
-            self.log_msg(f"Ignoring request for {domain}")
-
-        # Fourth check if the domain should be resolved to a specific IP
-        elif domain_lower in self.resolve:
-            self.debug_msg(f"Found {domain} in resolve list (as domain)")
-            ip = self.resolve[domain_lower]
-
-        # Finally send back the default IP address
+        for reject in self.resolve:
+            if re.search(reject, fqdn_lower):
+                self.debug_msg(f"Found {fqdn} in resolve list (as FQDN)")
+                ip = self.resolve[reject]
+                break
+            # end if
         else:
+            # Finally send back the default IP address
             self.debug_msg(f"Sending default_ip for {fqdn}")
             ip = self.default_ip
-        # end if
-
-        if ip is None:
-            return
-        # end if
+        # end for
 
         dns_resp = self.build_response(dns_req, ip)
         self.log_msg(f"Response: {fqdn} -> {ip}")
