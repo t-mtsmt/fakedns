@@ -49,8 +49,9 @@ __all__ = [
 _logger = logging.getLogger("fakedns")
 _logger.setLevel(logging.INFO)
 _formatter = logging.Formatter(
-    fmt="{name}[{levelname}]: {message}",
-    style="{"
+    fmt="{asctime}.{msecs:0<3.0f} {name}[{levelname}]: {message}",
+    style="{",
+    datefmt="%Y-%m-%d %H:%M:%S"
 )
 _handler = logging.StreamHandler(stream=sys.stdout)
 _handler.setFormatter(_formatter)
