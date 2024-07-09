@@ -1533,32 +1533,23 @@ def main():
        
        Here is an example configuration file:
        
-       .microsoft.com
-       host.example.com 1.2.3.4
-       .example.com
-       host.company.com
-       .company.com 2.3.4.5
+       microsoft\.com$
+       host\.example\.com$ 1.2.3.4
+       *\.example\.com$
+       host\.company\.com$
+       *\.company\.com$ 2.3.4.5
        
        Each rule must be on a single line, and has one or two parts. Rules with
        one part instruct fakedns to ignore a DNS query. In the example shown
-       above there are three ignore rules: .microsoft.com, .example.com, and
-       host.company.com. Rules with two parts instruct fakedns to resolve a
+       above there are three ignore rules: microsoft\.com$, *.\example\.com$, and
+       host\.company\.com$. Rules with two parts instruct fakedns to resolve a
        DNS query to a specific IP address. In the example shown above there are
-       two resolve rules: host.example.com, and .company.com.
-       
-       Each rule begins with a label. If the first character of the label is a
-       dot ('.'), it is considered a wildcard and the rule is applied for any
-       query that matches the domain (or subdomain) specified. If the first
-       character is not a dot, the label is considered a Fully Qualified
-       Domain Name, and the rule is applied only if the DNS query matches
-       that exact label. In the example shown above, .microsoft.com,
-       .example.com, and .company.com are wildcard matches, and 
-       host.example.com, and host.company.com are exact matches.
+       two resolve rules: host\.example\.com$, and *\.company\.com$.
        
        Rules with two parts (resolve rules) must have an IP address that
        follows the label, separated by a single whitespace. In the example
-       shown above, queries for host.example.com resolve to 1.2.3.4, and
-       any query for .company.com will resolve to 2.3.4.5.
+       shown above, queries for host\.example\.com$ resolve to 1.2.3.4, and
+       any query for *\.company\.com$ will resolve to 2.3.4.5.
     """)
 
     # First parse the command line arguments, to determine configuration
@@ -1615,8 +1606,8 @@ def main():
         action="append",
         metavar="LABEL",
         dest="ignore",
-        help="Domains (.domain.tld) or FQDNs (host.domain.tld) to ignore " \
-             "(can be specified multiple times.)"
+        help="Specify domains to ignore using regular expressions "\
+             "(can be specified multiple times)."
     )
 
     arg_parser.add_argument(
@@ -1625,8 +1616,8 @@ def main():
         metavar=("LABEL", "IP"),
         nargs=2,
         dest="resolve",
-        help="Domains (.domain.tld) or FQDNs (host.domain.tld) to resolve " \
-            "to a specific IP address (can be specified multiple times.)"
+        help="Specify domains to resolve using regular expressions "\
+             "(can be specified multiple times)."
     )
 
     args = arg_parser.parse_args()
